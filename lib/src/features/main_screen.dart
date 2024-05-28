@@ -8,50 +8,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // TODO: initiate controllers
-  }
+  final TextEditingController _zipController = TextEditingController();
+  String _cityResult = 'Noch keine PLZ gesucht';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: Column(
-            children: [
-              const TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), labelText: "Postleitzahl"),
-              ),
-              const SizedBox(height: 32),
-              OutlinedButton(
-                onPressed: () {
-                  // TODO: implementiere Suche
-                },
-                child: const Text("Suche"),
-              ),
-              const SizedBox(height: 32),
-              Text("Ergebnis: Noch keine PLZ gesucht",
-                  style: Theme.of(context).textTheme.labelLarge),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    // TODO: dispose controllers
-    super.dispose();
-  }
-
-  Future<String> getCityFromZip(String zip) async {
-    // simuliere Dauer der Datenbank-Anfrage
-    await Future.delayed(const Duration(seconds: 3));
+  Future<String> _getCityFromZip(String zip) async {
+    // Simuliere Dauer der Datenbank-Anfrage
+    await Future.delayed(const Duration(seconds: 1));
 
     switch (zip) {
       case "10115":
@@ -68,5 +30,51 @@ class _MainScreenState extends State<MainScreen> {
       default:
         return 'Unbekannte Stadt';
     }
+  }
+
+  @override
+  void dispose() {
+    _zipController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 80),
+              TextField(
+                controller: _zipController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Postleitzahl",
+                ),
+              ),
+              const SizedBox(height: 32),
+              OutlinedButton(
+                onPressed: () {
+                  final zip = _zipController.text;
+                  _getCityFromZip(zip).then((city) {
+                    setState(() {
+                      _cityResult = 'Ergebnis: $city';
+                    });
+                  });
+                },
+                child: const Text("Suche"),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                _cityResult,
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
