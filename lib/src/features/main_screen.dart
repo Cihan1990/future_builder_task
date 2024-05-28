@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
@@ -58,9 +59,17 @@ class _MainScreenState extends State<MainScreen> {
               OutlinedButton(
                 onPressed: () {
                   final zip = _zipController.text;
+                  // Verwende den FutureBuilder hier
+                  setState(() {
+                    _cityResult = 'Lade...';
+                  });
                   _getCityFromZip(zip).then((city) {
                     setState(() {
                       _cityResult = 'Ergebnis: $city';
+                    });
+                  }).catchError((error) {
+                    setState(() {
+                      _cityResult = 'Fehler: $error';
                     });
                   });
                 },
@@ -78,3 +87,5 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+
